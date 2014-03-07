@@ -7,7 +7,7 @@ This is a Simulink model of the Hyperloop transportation concept put forth by El
 
 It is intended for open collaboration. 
 
-Required software:
+Required software (R2014a):
 - MATLAB
 - Simulink
 
