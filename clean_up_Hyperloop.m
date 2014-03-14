@@ -24,3 +24,4 @@ end
 % Reset the location where generated code and other temporary files are
 % created (slprj) to the default:
 Simulink.fileGenControl('reset');
+end
