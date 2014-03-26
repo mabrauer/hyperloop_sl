@@ -23,3 +23,4 @@ folders = project_paths();
 for jj=1:numel(folders)
     addpath( fullfile(projectRoot, folders{jj}) );
 end
+end
