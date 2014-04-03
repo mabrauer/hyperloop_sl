@@ -4,11 +4,15 @@
 % Copyright 2013 - 2014 The MathWorks, Inc
 
 %% Chassis
+disp('Loading Chassis Variant')
 if checkToolbox({'Simulink 3D Animation';'SimMechanics';'Simscape'})
+    disp('   Loading Alpha_sm_s3D')
     VAR_Chassis     = varChassis.Alpha_sm_s3D;
 elseif checkToolbox({'SimMechanics';'Simscape'})
+    disp('   Alpha_sm_s3D not supported. Loading Alpha_sm')
     VAR_Chassis     = varChassis.Alpha_sm;
 else
+    disp('   Alpha_sm_s3D and Alpha_sm not supported. Loading Alpha')
     VAR_Chassis     = varChassis.Alpha;
 end
 
