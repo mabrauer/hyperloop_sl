@@ -1,5 +1,5 @@
 function [checkOK, uninstToolboxes, noLicToolboxes] = checkToolbox(toolboxes)
-%checkToolboxInstall -  given a cell array of toolbox names, determines if 
+%checkToolboxInstall -  given a cell array of toolbox names, determines if
 %   they are currently installed and have available licenses
 %
 % INPUTS:   toolboxes - cell array or string with toolbox names to check for
@@ -32,13 +32,13 @@ uninstToolboxes = toolboxes(checkEachInst==0);
 checkEachLic    = zeros(length(toolboxes),1);
 for ii = 1:length(toolboxes)
     checkEachLic(ii) = license('test',verName2LicName(toolboxes{ii}));
-end    
+end
 checkLicOK      = all(checkEachLic);
 noLicToolboxes  = toolboxes(checkEachLic==0);
 
 % check both
-checkOK         = and(checkInstOK,checkLicOK); 
-
+checkOK         = and(checkInstOK,checkLicOK);
+end
 function licenseName = verName2LicName(verName)
 %verName2LicName -  returns the analagous license name for a toolbox given
 %   the standard toolbox name returned by the ver command
@@ -120,4 +120,5 @@ if isempty(matchingIndex)
     error('Toolbox "%s" Not found',verName)
 else
     licenseName = licStrings{matchingIndex};
+end
 end
