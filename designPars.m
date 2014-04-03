@@ -32,6 +32,8 @@ Power.MaxEnergy         = 5*85e3*60*60; % (W-s)
                                     % Model S is ~500kg for 85 kWh.
                                     % Page 22 talks about 2500 kg of 
                                     % batteries, so that's roughly 5x85 kWh
+Power.Efficiency        = 0.98;     % (0-1) assumption for bi-directional 
+                                    % efficiency in and out of battery                                    
                                     
 %% Compressor
 Comp.CoolantTemp        = 293;      % (K)
