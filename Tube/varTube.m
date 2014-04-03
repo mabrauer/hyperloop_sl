@@ -5,7 +5,7 @@
 
 classdef varTube < Simulink.IntEnumType
    enumeration
-      Alpha  (1)
-      Alpha_sf (2)
+      Alpha(1)
+      Alpha_sf(2)
    end
 end
