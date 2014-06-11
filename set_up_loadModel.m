@@ -12,6 +12,12 @@ v_ds    = v(1:ds:end);
 lat0    = lat1(1);
 lon0    = lon1(1);
 
+% Calculate vertical accelerations from data
+absOn = false;
+z_accel = calcVertAccel(z_elevTube,z_dist,d,v,absOn);   
+    % there is a simplification that translational velocity is assumed to
+    % match target
+
 %% Configure variants
 loadVariants
 
