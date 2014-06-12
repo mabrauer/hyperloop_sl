@@ -5,16 +5,22 @@
 
 %% Load data file and remove redundant points
 load RouteTotal
+    % This data file must include
+    %   lat1, lon1 - corresponding latitude and longitude points on route
+    %   d, v - distance and velocity vector covering total
+    %       distance of route and corresponding velocity at those points
+    %   z_dist, z_elevTube, z_height - absolute elevation and height wrt
+    %       ground covering total distance of route
 
 % remove any redundant data points (no delta position)
 zeroDeltaDInd           = find(diff(d)==0);
-accel(zeroDeltaDInd)    = [];
+% accel(zeroDeltaDInd)    = [];
 d(zeroDeltaDInd)        = [];
 lat1(zeroDeltaDInd)     = [];
 lon1(zeroDeltaDInd)     = [];
-t(zeroDeltaDInd)        = [];
+% t(zeroDeltaDInd)        = [];
 v(zeroDeltaDInd)        = [];
-vt(zeroDeltaDInd)       = [];
+% vt(zeroDeltaDInd)       = [];
 
 %% onvert latitude and longitude data to x,y coordinate system
 [xx, yy, transMatrix]   = reorientLatLon(lat1,lon1);
