@@ -4,8 +4,9 @@
 % Copyright 2013 - 2014 The MathWorks, Inc
 
 %% Load data file and remove redundant points
-load AlphaRoute_20140613
-    % This data file must include
+[routeFilename, routePath] = uigetfile('*.mat','Select the Route data file');
+load([routePath,routeFilename])
+% This data file must include
     %   lat1, lon1 - corresponding latitude and longitude points on route
     %   d, v - distance and velocity vector covering total
     %       distance of route and corresponding velocity at those points
