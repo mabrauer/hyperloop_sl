@@ -1,5 +1,5 @@
 %% Initial set-up of project paths and such
-set_up_Hyperloop
+projectRoot = set_up_HyperloopProject;
 
 %% Initiate user specified workflow 
 newRtStr    = 'Create a new route';
@@ -15,7 +15,7 @@ switch workflow
         set_up_newRoute
     case runSimStr
         clear newRtStr runSimStr runVisStr workflow
-        set_up_loadModel
+        set_up_runSim
     case runVisStr
         clear newRtStr runSimStr runVisStr workflow
         main_sl2ge

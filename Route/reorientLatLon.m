@@ -6,8 +6,7 @@ function [xx_p, yy_p, transMatrix] = reorientLatLon(lat,lon)
 %   Copyright 2013 - 2014 The MathWorks, Inc
 
 %% Convert latitude, longitude and elevation to cartesian coordinates
-lat2met = 110958.98;    % one degree of latitude is 110958.98 m at 36 deg
-lon2met = 90163.66;     % one degree of longitude is 90163.66 m at 36 deg
+[ lat2met, lon2met ] = LatLon2Met( lat );
 
 xx = (lon-lon(1))*lon2met;
 yy = (lat-lat(1))*lat2met;

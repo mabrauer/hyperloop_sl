@@ -9,7 +9,26 @@
 
 %% Re-orient x-y data to latitude and longitude coordinates
 [latAct, lonAct ]   = reorientXY2LatLon(logsout.getElement('xact').Values.Data,...
-    logsout.getElement('yact').Values.Data,transMatrix,lat1(1),lon1(1));
+    logsout.getElement('yact').Values.Data,transMatrix,lat1(1),lon1(1),latMean);
+
+%% Save results file
+saveDlg.prompt = {'Enter a filename for your results'};
+saveDlg.title = 'Save Simulation Results';
+saveDlg.num_lines = 1;
+saveDlg.default = {['Results_',datestr(now,'yyyy-mm-dd_HH-MM')]};
+saveDlg.options.Resize='on';
+saveDlg.options.WindowStyle='normal';
+saveDlg.options.Interpreter='tex';
+resultsFilename = inputdlg(saveDlg.prompt,saveDlg.title,saveDlg.num_lines,...
+    saveDlg.default,saveDlg.options);
+clear saveDlg
+if not(isempty(resultsFilename))
+    save([projectRoot,'\SimResults\',resultsFilename{1}])
+else
+    disp('Saving results cancelled')
+end
+clear resultsFilename
+
 
 %% Plot data
 plotHandle = plotTrajAccel(...
@@ -19,8 +38,18 @@ plotHandle = plotTrajAccel(...
     logsout.getElement('dact').Values.Data);
 
 %% Add map and route points
-load caliAster
-[mapAxes, plotHandle.map] = plotTrajMap(ZA, RA, lon1, lat1,lonLim,latLim);
+% load caliAster
+degSpace    = 0.05;     % At least this much space around round (deg)
+degRound    = 0.1;      % Maps is rounded to nearest (deg)
+latLim = [degRound*floor(min(lat1-degSpace)/degRound) degRound*ceil(max(lat1+degSpace)/degRound)];
+lonLim = [degRound*floor(min(lon1-degSpace)/degRound) degRound*ceil(max(lon1+degSpace)/degRound)];
+try
+    [mapAxes, plotHandle.map] = plotTrajMap(topo.ZA, topo.RA, lon1, lat1,lonLim,latLim);
+catch
+    load caliAster
+    [mapAxes, plotHandle.map] = plotTrajMap(ZA, RA, lon1, lat1,lonLim,latLim);
+end
+    
 
 hold(mapAxes,'on');
 axes(mapAxes)

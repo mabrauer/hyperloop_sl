@@ -1,2 +1,2 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Info Name="clean_up_Hyperloop" Type="Shutdown" File="clean_up_Hyperloop.m" GroupUUID="8147ddde-cfd1-497e-bb20-2e649fe74d5d" />
+<Info Name="clean_up_HyperloopProject" Type="Shutdown" File="clean_up_HyperloopProject.m" GroupUUID="8147ddde-cfd1-497e-bb20-2e649fe74d5d" />

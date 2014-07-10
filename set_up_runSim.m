@@ -1,5 +1,5 @@
 % Filename:     set_up_loadModel.m
-% Description:  Initializes the hyperllop_arc model
+% Description:  Initializes the hyperloop_arc model
                 
 % Copyright 2013 - 2014 The MathWorks, Inc
 

@@ -1,4 +1,4 @@
-function set_up_Hyperloop()
+function projectRoot = set_up_Hyperloop()
 %set_up_project  Configure the environment for this project
 %
 %   Set up the environment for the current project. This function is set to
