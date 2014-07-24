@@ -1,0 +1,45 @@
+<html>
+<head>
+  <title>Sample</title>
+
+  <script src="http://www.google.com/jsapi?key=AIzaSyCCCVhOfOJzWCmEUhl4Gdwy_IXdsZMcfks"></script>
+  <script type="text/javascript" src="scripts.js"></script> 
+  <script src="http://earth-api-samples.googlecode.com/svn/trunk/lib/kmldomwalk.js" type="text/javascript"></script>
+  <script type="text/javascript" src="http://www.google.com/earth/plugin/examples/js/math3d.js"></script>
+
+
+  <script type="text/javascript">
+    var ge = null;
+    google.load("earth", "1");
+    google.load("maps", "2");
+
+    function init() {
+      google.earth.createInstance('map3d', initCB, failureCB);
+    }
+
+    function initCB(instance) {
+      ge = instance;
+      ge.getWindow().setVisibility(true);
+
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BUILDINGS, true);
+      ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
+    }
+
+    function failureCB(errorCode) {
+      alert("Error creating map3d: " + errorCode);
+    }
+
+    google.setOnLoadCallback(init);
+
+    function initializeLocation(ge){
+    }
+
+  </script>
+
+</head>
+
+<body>
+  <div id="map3d" style="height: 565px; width: 1080px;"></div>
+</body>
+
+</html>
