@@ -34,7 +34,10 @@ dactOffset          = 0;    % offset due to slight translational distance
 cd SimResults
 [simFilename, simPath] = uigetfile('*.mat','Select the simulation results file');
 load([simPath,simFilename])
-cd(projectRoot)
+cd ..       % this is a bug fix to replace >> cd(projectRoot)
+            % need to improve the polluted *.mat files as too many
+            % variables are being saved from simulation results
+            % (ex. projectRoot)
 
 latOffset       = offsetNSinMeters/110958.98;
 if not(exist('z_elev','var'))
