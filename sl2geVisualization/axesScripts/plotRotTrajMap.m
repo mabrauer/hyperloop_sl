@@ -18,4 +18,4 @@ currentHandle = geoshow(lat(1), lon(1),'Color','r','LineWidth',2);
 
 set(mapAxes,'Xlim',[-2.04 -1.994])
 set(mapAxes,'Ylim',[-.365 -.275])
-warning('Map axes x and y limits were determined manually. Not suitable for programmatic application.')
+warning('Map axes x and y limits were determined manually for California. You may need to set X and Y limits manually to capture map.')

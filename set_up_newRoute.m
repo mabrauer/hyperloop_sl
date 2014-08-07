@@ -125,4 +125,4 @@ clear saveDlg
 
 %% Return to project root folder
 cd(projectRoot)
-clear project
+clearvars -except ProjectRoot

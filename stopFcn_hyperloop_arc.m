@@ -12,6 +12,7 @@
     logsout.getElement('yact').Values.Data,transMatrix,lat1(1),lon1(1),latMean);
 
 %% Save results file
+% Define user prompt dialog
 saveDlg.prompt = {'Enter a filename for your results'};
 saveDlg.title = 'Save Simulation Results';
 saveDlg.num_lines = 1;
@@ -19,15 +20,23 @@ saveDlg.default = {['Results_',datestr(now,'yyyy-mm-dd_HH-MM')]};
 saveDlg.options.Resize='on';
 saveDlg.options.WindowStyle='normal';
 saveDlg.options.Interpreter='tex';
+
+% create filename string and save results
 resultsFilename = inputdlg(saveDlg.prompt,saveDlg.title,saveDlg.num_lines,...
     saveDlg.default,saveDlg.options);
 clear saveDlg
+resultsFilePath = [projectRoot,'\SimResults\',resultsFilename{1}];
 if not(isempty(resultsFilename))
-    save([projectRoot,'\SimResults\',resultsFilename{1}])
+    save(resultsFilePath)
 else
     disp('Saving results cancelled')
 end
-clear resultsFilename
+
+% Remove projectRoot from results file as this could lead to issues when
+% loading this mat file into another user's project
+vars = rmfield(load(resultsFilePath),'projectRoot');
+save(resultsFilePath,'-struct','vars');
+clear resultsFilePath resultsFilename vars
 
 
 %% Plot data

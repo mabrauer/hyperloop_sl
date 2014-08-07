@@ -1,4 +1,4 @@
-function projectRoot = set_up_Hyperloop()
+function [projectRoot, hadToOpen] = set_up_HyperloopProject()
 %set_up_project  Configure the environment for this project
 %
 %   Set up the environment for the current project. This function is set to
@@ -7,7 +7,13 @@ function projectRoot = set_up_Hyperloop()
 %   Copyright 2011-2014 The MathWorks, Inc.
 
 % Use Simulink Project API to get the current project:
-project = simulinkproject;
+hadToOpen = false;
+try
+    project = simulinkproject;
+catch
+    project = slproject.loadProject('hyperloop_sl.prj');
+    hadToOpen = true;
+end
 
 projectRoot = project.RootFolder;
 % Set the location of slprj to be the "work" folder of the current project:
