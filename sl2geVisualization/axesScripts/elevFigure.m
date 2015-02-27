@@ -9,7 +9,7 @@ function elevHandles = elevFigure(hAxes)
 % hAxes = gca;
 hold on
 set(hAxes,'Color','black')
-set(hAxes,'DrawMode','fast') % does this do anything for us?
+set(hAxes,'SortMethod','childorder') % updated from using DrawMode property based on R2014b warning
 set(hAxes,'FontSize',12)
 set(hAxes,'GridLineStyle',':')
 set(hAxes,'XColor','white')

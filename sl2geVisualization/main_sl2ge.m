@@ -58,6 +58,8 @@ heightGainBlock = 'sl2ge_hyperloop/heightData/HeightWrtVehicle1';
 set_param(heightGainBlock,'Gain',num2str(heightOffset))
 camControlPars  % control parameters for camera stateflow logic
 stopTime = logsout.getElement('dact').Values.Time(end);
+stopTimeResolution = 0.1;   % use this value to round off stopTime to avoid solver warning
+stopTime = round(stopTime/stopTimeResolution)*stopTimeResolution;
 
 %% Create UIs and wait
 disp('Loading Google Earth plugin. Two stack overflow warnings are normal. Click OK for each')
