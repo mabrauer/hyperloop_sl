@@ -11,11 +11,9 @@ ii = 2;
 remIdx = [];
 while ii<=size(d,1);
     if and(d(ii) < 10,ii<size(d,1));
-        x = [x(1:ii-1);x(ii+1:end)];
-        y = [y(1:ii-1);y(ii+1:end)];
-        d(ii+1) = d(ii+1) + d(ii);
-        d = [d(1:ii-1);d(ii+1:end)];
-        remIdx = [remIdx;ii];
+        d(ii-1) = d(ii-1) + d(ii);       % add delta to previous delta point
+        d(ii) = [];                         
+        remIdx = [remIdx;ii+length(remIdx)];
     else
         d(ii) = d(ii) + d(ii-1);
         ii = ii+1;

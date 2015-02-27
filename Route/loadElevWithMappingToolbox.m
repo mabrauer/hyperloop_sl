@@ -45,9 +45,18 @@ disp('Calculating elevation along route...')
 ZA_lat  = linspace(latLim(1), latLim(2), size(topo.ZA,1));
 ZA_lon  = linspace(lonLim(1), lonLim(2), size(topo.ZA,2));
 elev    = zeros(size(lat));
+
+% Add some status as this loop takes a long time
+statusUpdatesTotal = 5;
+statusUpdate = 1;
+
 for ii = 1:size(lat,1)
     elev(ii) = interp2(ZA_lon,ZA_lat,flipud(topo.ZA),lon(ii),lat(ii));
     % in Northern and Western hemisphere, need to flip NS for monotomically
     % increasing latitude vector
+    if ii>(size(lat,1)/statusUpdatesTotal*statusUpdate)
+        disp(sprintf('    completed %d of %d elevation points',ii,size(lat,1)))
+        statusUpdate = statusUpdate + 1;
+    end
 end
 clear ii
