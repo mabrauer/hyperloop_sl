@@ -12,13 +12,18 @@ if not(hadToOpen)   % only initiate workflows if project was already open
     
     switch workflow
         case newRtStr
-            clear newRtStr runSimStr runVisStr workflow
+            clear newRtStr runSimStr runVisStr workflow hadToOpen
             set_up_newRoute
         case runSimStr
-            clear newRtStr runSimStr runVisStr workflow
+            clear newRtStr runSimStr runVisStr workflow hadToOpen
             set_up_runSim
         case runVisStr
-            clear newRtStr runSimStr runVisStr workflow
+            clear newRtStr runSimStr runVisStr workflow hadToOpen
             main_sl2ge
+        case ''
+            clear newRtStr runSimStr runVisStr workflow hadToOpen
+            disp('User did not select a workflow')
     end
+    
+% projectRoot should be the only variable retained at end    
 end

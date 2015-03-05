@@ -6,19 +6,33 @@ cd(kmlPath)
 clear kmlFilename kmlPath
 
 %% Create distance vector and eliminate redundant positions
-disp('*** Creating distance vector ***')
-
 % get x and y position in meters, oriented from start to end along x axis
 [x, y, transMatrix]     = reorientLatLon(lat1,lon1);
-latMean = mean(lat1);
+latMean                 = mean(lat1);
 
-% get distance vector along original data and remove duplicates
-[z_dist, ~, ~, remIdx]          = transDist2D(x, y);
+% Create fit model of x,y data in order to increase resolution
+if checkToolbox('Curve Fitting Toolbox')
+    disp('*** Smoothing data ***')
+    fitTraj = fit(x,y,'smoothingspline','SmoothingParam',5E-7);
+    % x   = refactorData(x,ceil(max(diff(z_dist))/100),true);
+    y   = feval(fitTraj,x);
+else
+    warning('Curve fitting toolbox not available, consider smoothing your trajectory')
+end
+
+% Get distance vector, eliminating redundant position points
+disp('*** Creating distance vector ***')
+[d, x, y, remIdx]       = transDist2D(x, y);
 lat1(remIdx) = [];
 lon1(remIdx) = [];
 x(remIdx)    = [];
 y(remIdx)    = [];
 z(remIdx)    = []; 
+
+% convert position points back to latitude and longitude
+[lat1, lon1]            = reorientXY2LatLon(x,y,transMatrix,lat1(1),lon1(1),latMean);
+
+clear x y transMatrix
  
 %% Decide how to handle elevation data
 disp('*** Checking Elevation data ***')
@@ -41,7 +55,7 @@ elseif licMapTB
         [z, topo] = loadElevWithMappingToolbox(lat1, lon1);
     else
         % populate topography
-        [~, topo] = loadElevWithMappingToolbox(lat1, lon1);
+        [~, topo] = loadElevWithMappingToolbox(lat1, lon1); % this doesn't look right
     end
     clear questStr keepStr replaceStr desElevData
 elseif noElev
@@ -59,53 +73,42 @@ end
 clear licMapTB noElev
 
 %% Populate elevation and height data assuming constant height above ground
+z_dist = d;
 constHeight = 2;
 fprintf('*** Populating elevation data with constant %dm above ground level ***',constHeight)
 z_elevTube  = z + constHeight*ones(size(z));
+% refactorIndex = ceil(max(diff(z_dist))/500);
 if checkToolbox('Curve Fitting Toolbox')
     fitElev  = fit(z_dist,z_elevTube,'smoothingspline','SmoothingParam',5E-7);
-    z_dist   = refactorData(z_dist,ceil(max(diff(z_dist))/500),true);
+    % z_dist   = refactorData(z_dist,refactorIndex,true);
     z_elevTube   = feval(fitElev,z_dist);
 else
     warning('Curve fitting toolbox not available, consider smoothing your trajectory')
 end
 
+%z_dist      = z_dist(1:refactorIndex:end);
+%z_elevTube  = z_elevTube(1:refactorIndex:end);
 z_height    = constHeight*ones(size(z_elevTube));
 
-clear z constHeight
-
-%% Create higher resolution d,lat1 and lon1 data
-% Create fit model of x,y data in order to increase resolution
-if checkToolbox('Curve Fitting Toolbox')
-    fitTraj = fit(x,y,'smoothingspline','SmoothingParam',5E-7);
-    x   = refactorData(x,ceil(max(diff(z_dist))/100),true);
-    y   = feval(fitTraj,x);
-else
-    warning('Curve fitting toolbox not available, consider smoothing your trajectory')
-end
-
-% get distance vector, eliminating redundant position points
-[d, x, y]               = transDist2D(x, y);
-
-% convert position points back to latitude and longitude
-[lat1, lon1]            = reorientXY2LatLon(x,y,transMatrix,lat1(1),lon1(1),latMean);
-
-clear x y transMatrix
+clear z constHeight refactorIndex
 
 %% Create velocity vector
 disp('*** Populating velocity vector ***')
-velDlg.prompt = {'Enter target velocity for route (mph)'};
+
+% Create a prompt and request user to define velocity (single speed)
+velDlg.prompt = {'Enter target velocity (mph)'};
 velDlg.title = 'Target velocity';
 velDlg.num_lines = 1;
 velDlg.default = {'760'};
 velDlg.options.Resize='on';
 velDlg.options.WindowStyle='normal';
 velDlg.options.Interpreter='tex';
-vel_mph = inputdlg(velDlg.prompt,velDlg.title,velDlg.num_lines,...
-    velDlg.default,velDlg.options);
+velTgtString_mph = inputdlg(velDlg.prompt,velDlg.title,...
+    velDlg.num_lines,velDlg.default,velDlg.options);
 clear velDlg
 
-vel_mps = 0.44704*str2num(vel_mph{1});
+% Create velocity/distance profile based on defined acceleration limits
+vel_mps = 0.44704*str2num(velTgtString_mph{1});
 [v, ~] = recalcVelocity(d,vel_mps*ones(size(d)),5,1);
 warning('Simple velocity profile. Modify the d and v vectors to customize.')
 

@@ -59,4 +59,6 @@ for ii = 1:size(lat,1)
         statusUpdate = statusUpdate + 1;
     end
 end
+disp(sprintf('    completed %d of %d elevation points',ii,size(lat,1)))
+
 clear ii
