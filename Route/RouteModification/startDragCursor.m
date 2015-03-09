@@ -1,6 +1,7 @@
 function startDragCursor( ~, ~, h  )
 %startDragCursor  activate updating plots as cursor is dragged
 %   Copyright 2013 - 2014 The MathWorks, Inc
+
 ha = get(h.vel,'parent');  
 hf = get(ha,'parent'); 
 dragCursor( 0, 0, h );
