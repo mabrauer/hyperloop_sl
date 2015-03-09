@@ -4,10 +4,17 @@
 % Copyright 2013 - 2014 The MathWorks, Inc
 
 %% Load data file and remove redundant points
-cd([projectRoot,'\Route'])
+if exist('projectRoot')
+    cd([projectRoot,'\Route'])
+end
+
 [routeFilename, routePath] = uigetfile('*.mat','Select the Route data file');
 load([routePath,routeFilename])
-cd(projectRoot)
+
+if exist('projectRoot')
+    cd(projectRoot)
+end
+
 % This data file must include
     %   lat1, lon1 - corresponding latitude and longitude points on route
     %   d, v - distance and velocity vector covering total
@@ -24,6 +31,7 @@ lon1(zeroDeltaDInd)     = [];
 % t(zeroDeltaDInd)        = [];
 v(zeroDeltaDInd)        = [];
 % vt(zeroDeltaDInd)       = [];
+clear zeroDeltaDInd
 
 %% Convert latitude and longitude data to x,y coordinate system
 [xx, yy, transMatrix]   = reorientLatLon(lat1,lon1);

@@ -3,6 +3,8 @@ function [ d, lat1, lon1, z ] = distanceBetweenLatLon( lat, lon, z )
 % travel distance between a set of latitude and longitude points, also
 % return latitude and longitude vectors without redundant points
 
+% Copyright 2015 The MathWorks, Inc
+
 % Derive x and y coordinates, along with transformation matrix
 [x, y, transMatrix]     = reorientLatLon(lat,lon);
 

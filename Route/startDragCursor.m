@@ -20,5 +20,5 @@ function dragCursor( ~ ,~, h  )
 %   Copyright 2013 - 2014 The MathWorks, Inc
 cursorPos   = get(gca,'CurrentPoint');
 time        = cursorPos(1,1);
-updatePlots(h,time);
+updateCursors(h,time);
 end

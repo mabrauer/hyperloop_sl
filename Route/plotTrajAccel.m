@@ -1,18 +1,19 @@
-function [handle] = plotTrajAccel(t,v,accel, d)
+function [handle] = plotTrajAccel(t_v,v,t,accel, d)
 % plotTrajAccel - create a figure with subplots of distance (optional),
 % velocity and lateral/longitudinal acceleration vs. time. Return handle to
 % the figure, axes and individual data lines.
 %
 %   Copyright 2013 - 2014 The MathWorks, Inc
 
-% t - Time in sec
+% t_v - Time in sec for velocity data
 % v - Velocity in m/s
+% t - Time in sec for acceleration and distance data
 % accel - Acceleration in m/s2
 % d - Distance in m (optional)
 
 %% Determine if distance should be included
 % check if distance data should be included in plot
-if nargin == 4;
+if nargin == 5;
     subplotIndex = [311 312 313];
     incDist = true;
 else
@@ -35,7 +36,7 @@ end
 
 % Velocity subplot
 subplot(subplotIndex(2))
-handle.vel      = line(t/60,v*2.23694,'LineWidth',2);
+handle.vel      = line(t_v/60,v*2.23694,'LineWidth',2);
 grid on
 ylabel('Velocity (mph)','FontSize',14)
 set(gca,'FontSize',14)
