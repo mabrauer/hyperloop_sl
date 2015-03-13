@@ -7,15 +7,17 @@ data = h.mapFigure.UserData;
 RouteLon    = get(h.routePts,'XData');
 RouteLat    = get(h.routePts,'YData');
 Route       = [RouteLon' RouteLat'];
-velTargets  = get(h.vel,'YData');
+velTargets  = get(h.vel,'YData')';
 
 % Recalculate trajectory
 [lat1, lon1, v,vt,d,accel,t] = calcTraj(Route, velTargets/2.23694, ...
     data.smoothFactor, data.transAccelLim, data.incRes, data.stopAtEnd);
 
+decRes = round(length(v)/length(velTargets));
+
 % reduce resolution on velocity
-t_v     = t(1:data.incRes:end);
-v       = v(1:data.incRes:end);
+t_v     = t(1:decRes:end);
+v       = v(1:decRes:end);
 
 % Convert units to those for plots
 t       = t/60;             % seconds to minutes

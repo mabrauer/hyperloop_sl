@@ -17,18 +17,29 @@ function [lat, lon, v, vt,d, accel,t] = calcTraj(Route, ...
 % accel         forward and side-to-side acceleration (mps2)  [n*incRes x 2]
 % t             time(sec) [n*incRes x 1]
 
+disp('*** Calculating trajectory velocity and acceleration ***')
+
 % Reorient XY data into cartesian coordinates, along route axis
 [x,y,transMatrix] = reorientLatLon(Route(:,2),Route(:,1));
 
-% Create fit model of x,y data in order to increase resolution
-fitTraj = fit(x,y,'smoothingspline','SmoothingParam',smoothFactor);
+% Check if data is monotonically increasing. If not, don't use the fit to
+% calculate distance
+monoIncreasing = all(diff(x)>0);
 
-% Add finer resolution to data using fit
-x   = refactorData(x,incRes,true);
-vt  = refactorData(v,incRes,true);
-y   = feval(fitTraj,x);
-% not doing anything for z (elevation). Smoothing spline not available on 
-% 3D data. Should do a curve fit on z vs x (repeat cftool and feval for z)
+if not(monoIncreasing)
+    vt = v;
+    disp(' > Data is not monotonically increasing, so results may be innacurate')
+else
+    % Create fit model of x,y data in order to increase resolution
+    fitTraj = fit(x,y,'smoothingspline','SmoothingParam',smoothFactor);
+    
+    % Add finer resolution to data using fit
+    x   = refactorData(x,incRes,true);
+    vt  = refactorData(v,incRes,true);
+    y   = feval(fitTraj,x);
+    % not doing anything for z (elevation). Smoothing spline not available on 
+    % 3D data. Should do a curve fit on z vs x (repeat cftool and feval for z)
+end
 
 % Calculate translational distance vector 
 % (removes sequential duplicates from x, y data as well as vt vector)

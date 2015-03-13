@@ -24,24 +24,34 @@ minCellSize = 5.5556e-04;                   % finest resoultion (deg)
 cellSize    = max(minCellSize,cellSize);    % resolution (deg)
 
 %% Retrieve Elevation Data for overall area
-disp('Loading aster elevation data...')
+disp(' > Loading aster elevation data...')
 
-% Find the layers from the NASA WorldWind server.
 layers = wmsfind('nasa.network*elev','SearchField','serverurl');
-layers = wmsupdate(layers);
+maxAttempts = 5;
+for actAttempt = 1:maxAttempts
+    try
+        % Find the layers from the NASA WorldWind server.
+        layers = wmsupdate(layers);
+        % Select the 'EarthAsterElevations30m' layer containing SRTM30 data merged with global ASTER data
+        aster = layers.refine('earthaster','SearchField','layername');
+        % Load data from server
+        [topo.ZA, topo.RA] = wmsread(aster, 'Latlim', latLim, 'Lonlim', lonLim, ...
+            'CellSize', cellSize, 'ImageFormat', 'image/bil');
+        break
+    catch err
+        disp(sprintf('    attempt %d of %d to access server failed',actAttempt,maxAttempts))
+        if actAttempt == maxAttempts
+            rethrow(err);
+        end
+        pause(5)
+    end
+end
 
-% Select the 'EarthAsterElevations30m' layer containing SRTM30 data merged with global ASTER data
-aster = layers.refine('earthaster','SearchField','layername');
-
-% Load data from server
-[topo.ZA, topo.RA] = wmsread(aster, 'Latlim', latLim, 'Lonlim', lonLim, ...
-    'CellSize', cellSize, 'ImageFormat', 'image/bil');
-
-clear cellSize secSampling degRound degSpace minSample minCellSize maxPts
+clear cellSize secSampling degRound degSpace minSample minCellSize maxPts maxAttempts
 
 
 %% Calculate elevation data along route
-disp('Calculating elevation along route...')
+disp(' > Calculating elevation along route...this may take a minute...')
 ZA_lat  = linspace(latLim(1), latLim(2), size(topo.ZA,1));
 ZA_lon  = linspace(lonLim(1), lonLim(2), size(topo.ZA,2));
 elev    = zeros(size(lat));

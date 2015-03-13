@@ -4,16 +4,27 @@
 % Copyright 2013 - 2014 The MathWorks, Inc
 
 %% Load data file and remove redundant points
-if exist('projectRoot')
+[~, deepestFolder] = fileparts(pwd);
+
+if exist('projectRoot','var')
     cd([projectRoot,'\Route'])
+elseif and(exist('Route','dir'),not(strcmp(deepestFolder,'Route')))
+    % Route directory exists and we're not in it
+    cd Route
 end
 
 [routeFilename, routePath] = uigetfile('*.mat','Select the Route data file');
 load([routePath,routeFilename])
+clear routeFilename routePath
 
-if exist('projectRoot')
+if exist('projectRoot','var')
     cd(projectRoot)
+elseif and(exist('Route','dir'),strcmp(deepestFolder,'Route'))
+    % Route folder exists and we're in it
+    cd ..
 end
+
+clear deepestFolder
 
 % This data file must include
     %   lat1, lon1 - corresponding latitude and longitude points on route

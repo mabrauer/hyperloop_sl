@@ -4,6 +4,7 @@ function [ d, lat1, lon1, z ] = distanceBetweenLatLon( lat, lon, z )
 % return latitude and longitude vectors without redundant points
 
 % Copyright 2015 The MathWorks, Inc
+disp('*** Creating distance vector ***')
 
 % Derive x and y coordinates, along with transformation matrix
 [x, y, transMatrix]     = reorientLatLon(lat,lon);
@@ -19,7 +20,7 @@ z(remIdx)   = [];
 monoIncreasing = all(diff(x)>0);
 
 if not(monoIncreasing)
-    warning('Route data is not monotonically increasing after re-orienting')
+    disp(' > WARNING! Route data is not monotonically increasing after re-orienting')
     disp(' > Distance data may not be accurate')
     lat1 = lat;
     lon1 = lon;
@@ -30,7 +31,7 @@ else
     avgDist = 30;                               % (m)
     incRes = ceil((d(end)/avgDist)/length(z));
     if checkToolbox('Curve Fitting Toolbox')
-        disp('*** Smoothing data ***')
+        disp(' > Smoothing route data')
         x_highres   = refactorData(x,incRes,true);
         fitTraj = fit(x,y,'smoothingspline','SmoothingParam',5E-7);
         y_highresFit   = feval(fitTraj,x_highres);
@@ -39,7 +40,6 @@ else
     end
     
     % Get distance vector using high resolution data
-    disp('*** Creating distance vector ***')
     [d, ~, ~, remIdx]       = transDist2D(x_highres, y_highresFit, 0);
     
     % Down-sample distance data back to same size as lat, lon and z

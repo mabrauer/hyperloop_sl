@@ -18,7 +18,7 @@ end
 if and(noElev,licMapTB)
     % data isn't included but user has mapping toolbox, so load using
     % mapping tool
-    disp('> Elevation data not included. Using Mapping Toolbox')
+    disp(' > Elevation data not included. Using Mapping Toolbox')
     [z, topo] = loadElevWithMappingToolbox(lat1, lon1);
 elseif licMapTB
     % data is included but user has mapping toolbox, give option to use it
@@ -36,13 +36,13 @@ elseif licMapTB
     clear questStr keepStr replaceStr desElevData
 elseif noElev
     % no elevation data and no mapping toolbox
-    warning('> There is no elevation data included in your kml file')
+    warning(' > There is no elevation data included in your kml file')
     warning('  It is recommended to either:')
     warning('   - Use the Mapping Toolbox')
     warning('   - Supplement your KML file using www.gpsvisualizer.com') 
 else
     % elevation data and no mapping toolbox
-    warning('> Using elevation data provided.')
+    warning(' > Using elevation data provided.')
     warning('  You may get better results using the Mapping Toolbox')
 end
 
@@ -53,14 +53,14 @@ clear licMapTB noElev
 % Create initial elevation vector with constant height above ground
 z_dist      = d;
 constHeight = 2;
-fprintf('*** Populating elevation data with constant %dm above ground level ***',constHeight)
+disp(sprintf('*** Populating elevation data with constant %dm above ground level ***',constHeight))
 z_elevTube  = z + constHeight*ones(size(z));
 
 % Create smoothed elevation profile by downsampling and fitting the data
 if checkToolbox('Curve Fitting Toolbox')
     % Determine downsampling
     avgDist         = 500;  % average 500 m between elevation points 
-    dsIndex         = round((length(z_dist)/(d(end)/avgDist)));
+    dsIndex         = ceil((length(z_dist)/(d(end)/avgDist)));
     
     % Fit downsampled data
     fitElev  = fit(z_dist(1:dsIndex:end),z_elevTube(1:dsIndex:end),...

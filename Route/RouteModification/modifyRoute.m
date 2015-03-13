@@ -10,20 +10,35 @@ createDataStruct            % put value aboves into a single userData structure
 %% Load route data
 loadRouteData
 clear latMean phi transMatrix
+clear z_height z_elevTube z_dist
 
 %% Analyze trajectory data (derive t and accel vectors)
-[lat_p, lon_p, v_p,vt_p,d_p,accel_p,t_p] = calcTraj([lon1 lat1], v,...
+[lat_p, lon_p, v_p,~,d_p,accel_p,t_p] = calcTraj([lon1 lat1], v,...
     userData.smoothFactor, userData.transAccelLim, userData.incRes, true);
 
-%% Plot data and maps with simplified and smoothed routes
+%% Downsample velocity and RoutePt data for plots
 
-% Downsample velocity and RoutePt data
-decRoutePts             = 50;
+% Determine about of downsampling
+tgtDecimation           = round(length(d_p)/(d_p(end)/2000));           % target 2km gaps on average
+maxDecimation           = floor(length(d_p)/25);                        % leave at least 25 points
+decRoutePts             = min(min(tgtDecimation,maxDecimation),50);     % apply and limit to 50x
+
+% Apply decimation
 velTargets              = v_p(1:decRoutePts:end); % must be same size as 
                                     % routePts for calcTraj calculations
 t_v                     = t_p(1:decRoutePts:end);
 RoutePts                = [lat_p(1:decRoutePts:end),lon_p(1:decRoutePts:end)];
 
+% Preserve last data point
+if velTargets(end) ~= v_p(end)
+    velTargets(end+1) = v_p(end);
+    t_v(end+1) = t_p(end);
+    RoutePts(end+1,:) = [lat_p(end),lon_p(end)];
+end
+
+clear tgtDecimation maxDecimation decRoutePts
+
+%% Plot data and maps with simplified and smoothed routes
 % Plot distance (if selected), velocity and acceleration
 if userData.incDist
     tdPlot  = plotTrajAccel(t_v,velTargets,t_p,accel_p,d_p);
@@ -49,8 +64,8 @@ tdPlot.routePts         = ...
     'LineStyle','none','MarkerFaceColor','y');
 
 % Store user data in map figure's UserData field
-tdPlot.mapFigure.UserData = userData;
-clear userData
+tdPlot.mapFigure.UserData = userData; 
+clear accel_p d_p lat_p lon_p t_p userData
 
 %% Make plots interactive
 % Cursor for linking time/position on all plots
@@ -92,3 +107,6 @@ uiSmooth = uicontrol(tdPlot.mapFigure, 'Style', 'slider',...
     'FontUnits','normalized',...
     'FontSize',0.5,...
     'Callback', {@updateSmoothFactor,tdPlot}); 
+
+%% Clean up workspace variables
+clear velTargets xx yy uiExport uiSmoothTxt uiSmooth
