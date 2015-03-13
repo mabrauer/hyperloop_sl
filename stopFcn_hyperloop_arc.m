@@ -12,32 +12,25 @@
     logsout.getElement('yact').Values.Data,transMatrix,lat1(1),lon1(1),latMean);
 
 %% Save results file
-% Define user prompt dialog
-saveDlg.prompt = {'Enter a filename for your results'};
-saveDlg.title = 'Save Simulation Results';
-saveDlg.num_lines = 1;
-saveDlg.default = {['Results_',datestr(now,'yyyy-mm-dd_HH-MM')]};
-saveDlg.options.Resize='on';
-saveDlg.options.WindowStyle='normal';
-saveDlg.options.Interpreter='tex';
-
-% create filename string and save results
-resultsFilename = inputdlg(saveDlg.prompt,saveDlg.title,saveDlg.num_lines,...
-    saveDlg.default,saveDlg.options);
-clear saveDlg
-resultsFilePath = [projectRoot,'\SimResults\',resultsFilename{1}];
-if not(isempty(resultsFilename))
-    save(resultsFilePath)
+disp('*** Saving route data ***')
+if exist('routeFilename','var')
+    defaultFilename = strcat(routeFilename(1:end-4),'_Sim_',datestr(now,'yyyy-mm-dd_HH-MM'));
 else
-    disp('Saving results cancelled')
+    defaultFilename = strcat('Results_Sim_',datestr(now,'yyyy-mm-dd_HH-MM'));
 end
+if exist('projectRoot','var')
+    defaultFilename = strcat(projectRoot,defaultFilename);
+end
+[resultsFilename,resultsPathname] = uiputfile('*.mat','Save the route data',defaultFilename);
+resultsFilename = strcat(resultsPathname,resultsFilename);
+
+save(resultsFilename)
 
 % Remove projectRoot from results file as this could lead to issues when
 % loading this mat file into another user's project
-vars = rmfield(load(resultsFilePath),'projectRoot');
-save(resultsFilePath,'-struct','vars');
+vars = rmfield(load(resultsFilename),'projectRoot');
+save(resultsFilename,'-struct','vars');
 clear resultsFilePath resultsFilename vars
-
 
 %% Plot data
 plotHandle = plotTrajAccel(...
