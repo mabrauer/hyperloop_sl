@@ -15,7 +15,7 @@ end
 
 [routeFilename, routePath] = uigetfile('*.mat','Select the Route data file');
 load([routePath,routeFilename])
-clear routeFilename routePath
+clear routePath
 
 if exist('projectRoot','var')
     cd(projectRoot)
