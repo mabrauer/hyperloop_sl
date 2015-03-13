@@ -5,9 +5,9 @@
 % dactOffset          = 0;
 
 altAOffset          = 300;  % offset to make pod appear larger in 2nd axis (overhead)
-startTime           = 295;    % 33*60; % 34.5*60 % 33.5*60 % 28*60
+startTime           = stopTime - 60;    % 33*60; % 34.5*60 % 33.5*60 % 28*60
 offsetNSinMeters    = 0; 
-heightOffset        = 15;
+heightOffset        = 5;
 dactOffset          = 0;
 
 % altAOffset          = 300;  % offset to make pod appear larger in 2nd axis (overhead)
@@ -64,9 +64,9 @@ latOffset       = offsetNSinMeters/110958.98;
 [tubeLat, tubeLon, tubeElev, tubeHeading, tubeTilt] = genTubeLocations(logsout,...
     z_dist,z_elevTube, pillarSpacing,latOffset);
 
-% Update height offset
-heightGainBlock = 'sl2ge_hyperloop/vehicleMovement/HeightWrtVehicle1';
-set_param(heightGainBlock,'Gain',num2str(heightOffset))
+% % Update height offset
+% heightGainBlock = 'sl2ge_hyperloop/vehicleMovement/HeightWrtVehicle1';
+% set_param(heightGainBlock,'Gain',num2str(heightOffset))
 
 disp(sprintf('Initial latitude = %0.3f',getLOatTime(logsout,'lat',startTime)))
 disp(sprintf('Initial longitude = %0.3f',getLOatTime(logsout,'lon',startTime)))

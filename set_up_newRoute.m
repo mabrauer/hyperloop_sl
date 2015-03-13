@@ -1,11 +1,8 @@
 %% Open user selected KML file
-try
-    cd Route
-end
-[kmlFilename, kmlPath] = uigetfile('*.kml','Select the KML file for your route');
-cd(kmlPath)
-[lat_kml, lon_kml, z] = read_kml(kmlFilename);
-clear kmlFilename kmlPath
+[defaultRouteFolder] = getDefaultFolder('Route');
+[kmlFilename, kmlPath] = uigetfile('*.kml','Select the KML file for your route',defaultRouteFolder);
+[lat_kml, lon_kml, z] = read_kml(strcat(kmlPath,kmlFilename));
+clear kmlFilename kmlPath defaultRouteFolder
 
 %% Create distance vector and eliminate redundant positions
 [ d, lat1, lon1, z ] = distanceBetweenLatLon( lat_kml, lon_kml, z );

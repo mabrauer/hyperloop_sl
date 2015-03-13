@@ -17,7 +17,7 @@ latLim = [degRound*floor(min(lat-degSpace)/degRound) degRound*ceil(max(lat+degSp
 lonLim = [degRound*floor(min(lon-degSpace)/degRound) degRound*ceil(max(lon+degSpace)/degRound)];
 
 % Determine reasonable resolution for area bounded by latLim and lonLim
-maxPts      = 3000;         % max number of points along each axis of map
+maxPts      = 1000;         % max number of points along each axis of map
 % have issues accessing server with larger
 cellSize    = max((latLim(2)-latLim(1)),(lonLim(2)-lonLim(1)))/maxPts;
 minCellSize = 5.5556e-04;                   % finest resoultion (deg)

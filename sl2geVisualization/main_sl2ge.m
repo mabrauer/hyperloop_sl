@@ -1,15 +1,15 @@
 %% Check MATLAB version, architecture and licenses
+disp('*** Checking system compatibility ***')
 archString  = computer('arch');
 mlVersion   = version('-release');
 
-disp('Google Earth plugin only works on 32-bit version of MATLAB')
+disp(' > Google Earth plugin only works on 32-bit version of MATLAB')
 
 if not(strcmp('win32',archString))
     error('Google Earth plugin only works on 32-bit version of MATLAB')
 end
-
-if not(strcmp('2014a',mlVersion))
-    warning('This project was developed in R2014a. Please consider using that version')
+if and(not(strcmp('2014a',mlVersion)),not(strcmp('2014b',mlVersion)))
+    warning('This project has been validated in R2014a and R2014b. Please consider using one of those versions')
 end
 
 % Mapping toolbox is used for map figure in top-left
@@ -31,13 +31,13 @@ dactOffset          = 0;    % offset due to slight translational distance
 % load Results_20140331 % this data has improved passenger g calc's but not modified elev
 % logsoutPG       = logsout;
 % load Results_20140226_modifiedElev
-cd SimResults
-[simFilename, simPath] = uigetfile('*.mat','Select the simulation results file');
+if exist('projectRoot','var')
+    defaultFile = strcat(projectRoot,'\SimResults');
+else
+    defaultFile = [];
+end
+[simFilename, simPath] = uigetfile('*.mat','Select the simulation results file',defaultFile);
 load([simPath,simFilename])
-cd ..       % this is a bug fix to replace >> cd(projectRoot)
-            % need to improve the polluted *.mat files as too many
-            % variables are being saved from simulation results
-            % (ex. projectRoot)
 
 latOffset       = offsetNSinMeters/110958.98;
 if not(exist('z_elev','var'))
@@ -53,6 +53,7 @@ podIndex        = 1;    % initialize
 pillarIndex     = 1;    % initialize
 
 % Open model
+disp('*** Opening simulink model ***')
 open('sl2ge_hyperloop.slx');
 heightGainBlock = 'sl2ge_hyperloop/heightData/HeightWrtVehicle1';
 set_param(heightGainBlock,'Gain',num2str(heightOffset))
@@ -62,7 +63,8 @@ stopTimeResolution = 0.1;   % use this value to round off stopTime to avoid solv
 stopTime = round(stopTime/stopTimeResolution)*stopTimeResolution;
 
 %% Create UIs and wait
-disp('Loading Google Earth plugin. Two stack overflow warnings are normal. Click OK for each')
+disp('*** Loading Google Earth plugin ***')
+disp(' > Two stack overflow warnings are normal. Click OK for each')
 myEarth = sl2ge_multiple;
 pause(15);
 handles = guidata(myEarth);
@@ -96,13 +98,13 @@ oh_alt      = 300;
 %% Initialize models in GE
 
 % Add views
-disp('--- Initializing GoogleEarth')
+disp('*** Initializing GoogleEarth ***')
 pause(15)
 handles.myDoc1.parentWindow.execScript(['addLaView(' num2str(la_range) ',' num2str(la_tilt) ',' num2str(la_alt) ')'], 'Jscript');
 pause(2)
 handles.myDoc2.parentWindow.execScript(['addLaView(' num2str(oh_range) ',' num2str(oh_tilt) ',' num2str(oh_alt) ')'], 'Jscript');
 
-disp('--- Adding vehicles')
+disp(' > Adding vehicles')
 % Add hyperloop vehicle to main viewer (ground vehicle)
 handles.myDoc1.parentWindow.execScript(['addGroundVehicle()'], 'Jscript');
 pause(3)
@@ -115,7 +117,7 @@ pause(2)
 handles.myDoc2.parentWindow.execScript( ...
     ['addAerialModel(' num2str(lat0) ',' num2str(lon0) ',' num2str(heading) ')'], 'Jscript');
 
-disp('--- Adding station')
+disp(' > Adding station')
 % Add station to main viewer
 handles.myDoc1.parentWindow.execScript(['addStation()'], 'Jscript');
 pause(4)
@@ -124,12 +126,12 @@ handles.myDoc1.parentWindow.execScript( ...
 clear station*
 
 % Initialize pillars
-disp('--- Adding pillars')
+disp(' > Adding pillars')
 initPillars
 
 % Move to initial position
 % try
-disp('--- Transporting to starting position')
+disp(' > Transporting to starting position')
 handles.myDoc1.parentWindow.execScript(['teleportTo(' num2str(lat0) ',' num2str(lon0) ',' num2str(la_heading) ')'], 'Jscript');
 handles.myDoc2.parentWindow.execScript(['teleportTo(' num2str(lat0) ',' num2str(lon0) ',' num2str(la_heading) ')'], 'Jscript');
 % catch
@@ -162,8 +164,8 @@ hText.Dist      = getappdata(figureHandle,'textHandleDist');
 hText.Time      = getappdata(figureHandle,'textHandleTime');
 hText.TimeTD    = getappdata(figureHandle,'textHandleTimeTD');
 
-% Map
-disp('Creating map axis')
+%% Create Map
+disp('*** Creating map axis ***')
 degSpace    = 0.05;     % At least this much space around round (deg)
 degRound    = 0.1;      % Maps is rounded to nearest (deg)
 latLim = [degRound*floor(min(lat1-degSpace)/degRound) degRound*ceil(max(lat1+degSpace)/degRound)];
