@@ -2,11 +2,23 @@ function [mapFigure, mapAxes, mapHandle, terrainHandle, currentHandle] = plotRot
 % plotTrajMap - Display the texture map with route
 %
 %   Copyright 2013 - 2014 The MathWorks, Inc
-scrsz   = get(0,'ScreenSize');
-mapFigure = figure('Renderer','zbuffer','Position',[1521  451  319  623]);
+
+%% Create figure
+mapFigurePos = [1521  451  319  623];
+mapFigure = figure('Renderer','zbuffer','Position',mapFigurePos);
 set(mapFigure,'Color','k')
 
-mapAxes = axesm('MapProjection','mercator','Origin',[0 0 orientation]); % mapping toolbox
+%% Create map axis
+mapAxes = axesm('MapProjection','mercator','Origin',...
+    [mean(lat) mean(lon) orientation],'Grid','on','GLineWidth',0.5,...
+    'MLineLocation',1,'PLineLocation',1,...
+    'MLabelParallel',mean(lat),'PLabelMeridian',mean(lon),...
+    'MeridianLabel','on','ParallelLabel','on',...
+    'GColor','white','FontColor','white',...
+    'LabelFormat','compass','LabelRotation','on'); % mapping toolbox
+    
+    %     'MLabelLocation',mean(lat),'PLabelLocation',mean(lon),...
+
 set(mapAxes,'Position',[0 0 1 1])
 terrainHandle = geoshow(ZA, RA, 'DisplayType', 'texturemap');           % mapping toolbox
 demcmap(double(ZA))                                                     % mapping toolbox
@@ -16,6 +28,23 @@ hold on
 mapHandle = geoshow(lat,lon,'Color',[0.75 0.75 0.75],'LineWidth',3);     % mapping toolbox
 currentHandle = geoshow(lat(1), lon(1),'Color','r','LineWidth',2);
 
-set(mapAxes,'Xlim',[-2.04 -1.994])
-set(mapAxes,'Ylim',[-.365 -.275])
-warning('Map axes x and y limits were determined manually for California. You may need to set X and Y limits manually to capture map.')
+%% Set X and Y Limits
+XRange = [min(mapHandle.XData) max(mapHandle.XData)];
+YRange = [min(mapHandle.YData) max(mapHandle.YData)];
+
+XWidth = XRange(2) - XRange(1);
+YHeight = YRange(2) - YRange(1);
+
+FigureAspectRatio   = mapFigurePos(4)/mapFigurePos(3);
+DataAspectRatio     = YHeight/XWidth;
+BufferRatio         = 1.05;
+
+if DataAspectRatio > FigureAspectRatio
+    % keep YRange for YLim but extend XRange
+    set(mapAxes,'Ylim',YRange*BufferRatio)
+    set(mapAxes,'Xlim',XRange*DataAspectRatio/FigureAspectRatio*BufferRatio)
+else
+    % keep YRange for YLim but extend XRange
+    set(mapAxes,'Ylim',YRange*DataAspectRatio/FigureAspectRatio*BufferRatio)
+    set(mapAxes,'Xlim',XRange*BufferRatio)
+end

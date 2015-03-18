@@ -8,18 +8,35 @@ function [elev, topo] = loadElevWithMappingToolbox(lat, lon)
 
 %% Define region surrounding route
 % User parameters for area map bounds
+[orientation] = orientLatLonForMap(lat,lon)';
+theta = -orientation*pi/180;
+
+% Calculate the space necessary to cover for the map when re-orienting
 degSpace    = 0.05;     % At least this much space around round (deg)
 degRound    = 0.1;      % Maps is rounded to nearest (deg)
 
-% Define the lat and lon limits. Make sure there is at least
-% degSpace degrees of space, rounding out to the nearest degRound degree
 latLim = [degRound*floor(min(lat-degSpace)/degRound) degRound*ceil(max(lat+degSpace)/degRound)];
 lonLim = [degRound*floor(min(lon-degSpace)/degRound) degRound*ceil(max(lon+degSpace)/degRound)];
+
+latLength = latLim(2) - latLim(1);
+lonLength = lonLim(2) - lonLim(1);
+
+x = latLength*cos(theta);
+y = latLength*sin(theta);
+X = lonLength*cos(theta);
+Y = lonLength*sin(theta);
+
+lonLengthExt = (X+y)*cos(theta) + (x+Y)*sin(theta);
+latLengthExt = (x+Y)*cos(theta) + (X+y)*sin(theta);
+
+latLimExt = [mean(latLim)-latLengthExt/2 mean(latLim)+latLengthExt/2];
+lonLimExt = [mean(lonLim)-lonLengthExt/2 mean(lonLim)+lonLengthExt/2];
+
 
 % Determine reasonable resolution for area bounded by latLim and lonLim
 maxPts      = 1000;         % max number of points along each axis of map
 % have issues accessing server with larger
-cellSize    = max((latLim(2)-latLim(1)),(lonLim(2)-lonLim(1)))/maxPts;
+cellSize    = max((latLimExt(2)-latLimExt(1)),(lonLimExt(2)-lonLimExt(1)))/maxPts;
 minCellSize = 5.5556e-04;                   % finest resoultion (deg)
 cellSize    = max(minCellSize,cellSize);    % resolution (deg)
 
@@ -35,7 +52,7 @@ for actAttempt = 1:maxAttempts
         % Select the 'EarthAsterElevations30m' layer containing SRTM30 data merged with global ASTER data
         aster = layers.refine('earthaster','SearchField','layername');
         % Load data from server
-        [topo.ZA, topo.RA] = wmsread(aster, 'Latlim', latLim, 'Lonlim', lonLim, ...
+        [topo.ZA, topo.RA] = wmsread(aster, 'Latlim', latLimExt, 'Lonlim', lonLimExt, ...
             'CellSize', cellSize, 'ImageFormat', 'image/bil');
         break
     catch err
@@ -52,8 +69,8 @@ clear cellSize secSampling degRound degSpace minSample minCellSize maxPts maxAtt
 
 %% Calculate elevation data along route
 disp(' > Calculating elevation along route...this may take a minute...')
-ZA_lat  = linspace(latLim(1), latLim(2), size(topo.ZA,1));
-ZA_lon  = linspace(lonLim(1), lonLim(2), size(topo.ZA,2));
+ZA_lat  = linspace(latLimExt(1), latLimExt(2), size(topo.ZA,1));
+ZA_lon  = linspace(lonLimExt(1), lonLimExt(2), size(topo.ZA,2));
 elev    = zeros(size(lat));
 
 % Add some status as this loop takes a long time
