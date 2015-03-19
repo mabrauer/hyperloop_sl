@@ -1,9 +1,9 @@
 function [tubeLat, tubeLon, tubeElev, tubeHeading, tubeTilt] = genTubeLocations(logsout,...
-    z_dist,z_elevTube, gap, latOffset)
+    z_dist,z_elevTube, gap, latOffset,lonOffset)
 
 d       = logsout.getElement('dact').Values.Data(1:end-1);
 lat     = logsout.getElement('lat').Values.Data(1:end-1)+latOffset;
-lon     = logsout.getElement('lon').Values.Data(1:end-1);
+lon     = logsout.getElement('lon').Values.Data(1:end-1)+lonOffset;
 lat0    = lat(1);
 lon0    = lon(1);
 

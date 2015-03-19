@@ -23,20 +23,15 @@ end
 % Set custom parameters for visualizations. These may change based on user
 % preference and optimzation of certain sections of the route
 disp(' > Setting customizations for visualization')
-altAOffset          = 200;  % offset to make pod appear larger in 2nd axis (overhead)
-startTime           = 0;    %  33*60; % 34.5*60 % 33.5*60 % 28*60
-offsetNSinMeters    = 0;   % offset North/South to make visualization
-                            % look more realistic (highway median)
-latOffset           = offsetNSinMeters/110958.98;
-heightOffset        = 4;
-dactOffset          = 0;    % offset due to slight translational distance
-                            % that accumulates along route
+[ startTime, latOffset, lonOffset, heightOffset,...
+    altAOffset, dactOffset ] = getVisPar(logsout.getElement('lat'));
 
 % Initialize pillars
 disp(' > Calculating pillar locations')
+
 pillarSpacing   = 30; % meters between pillars
 [tubeLat, tubeLon, tubeElev, tubeHeading, tubeTilt] = genTubeLocations(logsout,...
-    z_dist,z_elevTube, pillarSpacing,latOffset);
+    z_dist,z_elevTube, pillarSpacing,latOffset,lonOffset);
 dataLength      = size(z_dist,1);
 podIndex        = 1;    % initialize
 pillarIndex     = 1;    % initialize
@@ -174,3 +169,8 @@ catch
         logsout.getElement('lat').Values.Data,mapRotation); % assumes lon and lat on same time scale
     nextMapUpdtPlr = 2;
 end
+
+%% Display user options to move forward
+disp('*** Ready to being visualization ***')
+disp(' > Run simulation to begin')
+disp(' > use reInitSim.m to fine-tune the simulation effects')
