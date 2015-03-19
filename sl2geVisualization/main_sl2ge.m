@@ -1,36 +1,13 @@
 %% Check MATLAB version, architecture and licenses
 disp('*** Checking system compatibility ***')
-archString  = computer('arch');
-mlVersion   = version('-release');
-
-disp(' > Google Earth plugin only works on 32-bit version of MATLAB')
-
-if not(strcmp('win32',archString))
-    error('Google Earth plugin only works on 32-bit version of MATLAB')
-end
-if and(not(strcmp('2014a',mlVersion)),not(strcmp('2014b',mlVersion)))
-    warning('This project has been validated in R2014a and R2014b. Please consider using one of those versions')
-end
-
-% Mapping toolbox is used for map figure in top-left
-licMappingToolbox   = checkToolbox('Mapping Toolbox');   
-
-% Simulink 3-D Animisation toolbox is used for front view
-licSl3DAnimation    = checkToolbox('Simulink 3D Animation');    
+checkSystemForVisual();
 
 %% Load data and open model
-altAOffset          = 200; % offset to make pod appear larger in 2nd axis (overhead)
-startTime           = 0; %  33*60; % 34.5*60 % 33.5*60 % 28*60
-offsetNSinMeters    = 20;  % offset North/South to make visualization
-                            % look more realistic (highway median)
-heightOffset        = 4;
-dactOffset          = 0;    % offset due to slight translational distance
-                            % that accumulates along route
+disp('*** Loading simulation ***')
 
-% Load data
-% load Results_20140331 % this data has improved passenger g calc's but not modified elev
-% logsoutPG       = logsout;
-% load Results_20140226_modifiedElev
+% Load simulation results
+disp(' > Loading dynamic simulation results')
+
 if exist('projectRoot','var')
     defaultFile = strcat(projectRoot,'\SimResults');
 else
@@ -39,12 +16,24 @@ end
 [simFilename, simPath] = uigetfile('*.mat','Select the simulation results file',defaultFile);
 load([simPath,simFilename])
 
-latOffset       = offsetNSinMeters/110958.98;
 if not(exist('z_elev','var'))
     z_elev = z_elevTube-z_height;
 end
 
+% Set custom parameters for visualizations. These may change based on user
+% preference and optimzation of certain sections of the route
+disp(' > Setting customizations for visualization')
+altAOffset          = 200;  % offset to make pod appear larger in 2nd axis (overhead)
+startTime           = 0;    %  33*60; % 34.5*60 % 33.5*60 % 28*60
+offsetNSinMeters    = 0;   % offset North/South to make visualization
+                            % look more realistic (highway median)
+latOffset           = offsetNSinMeters/110958.98;
+heightOffset        = 4;
+dactOffset          = 0;    % offset due to slight translational distance
+                            % that accumulates along route
+
 % Initialize pillars
+disp(' > Calculating pillar locations')
 pillarSpacing   = 30; % meters between pillars
 [tubeLat, tubeLon, tubeElev, tubeHeading, tubeTilt] = genTubeLocations(logsout,...
     z_dist,z_elevTube, pillarSpacing,latOffset);
@@ -53,7 +42,7 @@ podIndex        = 1;    % initialize
 pillarIndex     = 1;    % initialize
 
 % Open model
-disp('*** Opening simulink model ***')
+disp(' > Opening simulink model')
 open('sl2ge_hyperloop.slx');
 heightGainBlock = 'sl2ge_hyperloop/heightData/HeightWrtVehicle1';
 set_param(heightGainBlock,'Gain',num2str(heightOffset))
@@ -166,28 +155,22 @@ hText.TimeTD    = getappdata(figureHandle,'textHandleTimeTD');
 
 %% Create Map
 disp('*** Creating map axis ***')
-degSpace    = 0.05;     % At least this much space around round (deg)
-degRound    = 0.1;      % Maps is rounded to nearest (deg)
-latLim = [degRound*floor(min(lat1-degSpace)/degRound) degRound*ceil(max(lat1+degSpace)/degRound)];
-lonLim = [degRound*floor(min(lon1-degSpace)/degRound) degRound*ceil(max(lon1+degSpace)/degRound)];
+disp(' > Calculating optimal rotation of map axis')
+mapRotation =  orientLatLonForMap(logsout.getElement('lon').Values.Data,...
+        logsout.getElement('lat').Values.Data);
 try
+    disp(' > Plotting map with available topography')
     [mapFigure, mapAxes, plotHandle.map, plotHandle.terrain, plotHandle.current] = ...
         plotRotTrajMap(topo.ZA, topo.RA, logsout.getElement('lon').Values.Data, ...
-        logsout.getElement('lat').Values.Data,-60); % assumes lon and lat on same time scale
+        logsout.getElement('lat').Values.Data,mapRotation); % assumes lon and lat on same time scale
     nextMapUpdtPlr = 2;
 catch
+    % section of code used for old data for original route that wasn't
+    % configured to be compatible with call above
+    disp(' > Plotting map using caliAster data')
     load caliAster
     [mapFigure, mapAxes, plotHandle.map, plotHandle.terrain, plotHandle.current] = ...
         plotRotTrajMap(ZA, RA, logsout.getElement('lon').Values.Data, ...
-        logsout.getElement('lat').Values.Data,-60); % assumes lon and lat on same time scale
+        logsout.getElement('lat').Values.Data,mapRotation); % assumes lon and lat on same time scale
     nextMapUpdtPlr = 2;
 end
-
-% % old method
-% if licMappingToolbox
-%     load caliAster
-%     [mapFigure, mapAxes, plotHandle.map, plotHandle.terrain, plotHandle.current] = ...
-%         plotRotTrajMap(ZA, RA, logsout.getElement('lon').Values.Data, ...
-%         logsout.getElement('lat').Values.Data,-60); % assumes lon and lat on same time scale
-%     nextMapUpdtPlr = 2;
-% end

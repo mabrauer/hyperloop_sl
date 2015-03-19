@@ -13,8 +13,9 @@ lon0    = lon(1);
 [xPillar, yPillar, tubeElev] = calcPillarLoc(d,xx,yy,z_dist,z_elevTube,gap);
 
 % Covnert x-y pillar locations to latitude and longitude
+midLat  = (max(lat)+min(lat))/2 ;
 [tubeLat, tubeLon]          = reorientXY2LatLon(xPillar,yPillar,...
-    transMatrix,lat0,lon0,mean(lat));
+    transMatrix,lat0,lon0,midLat);
 
 % Determine heading and tilt for each tube between pillars
 [tubeHeading, tubeTilt] = calcPillarAngles(xPillar, yPillar, tubeElev, gap,transMatrix);

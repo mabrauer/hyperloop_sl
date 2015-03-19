@@ -46,7 +46,8 @@ else
     d = d(1:incRes:end);
     
     % convert position points back to latitude and longitude
-    [lat1, lon1]            = reorientXY2LatLon(x,y,transMatrix,lat(1),lon(1),mean(lat));
+    midLat  = (max(lat)+min(lat))/2 ;
+    [lat1, lon1]            = reorientXY2LatLon(x,y,transMatrix,lat(1),lon(1),midLat);
 end
 
 end
