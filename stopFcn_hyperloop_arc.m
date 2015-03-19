@@ -8,7 +8,7 @@
 % Copyright 2013 - 2014 The MathWorks, Inc
 
 %% Re-orient x-y data to latitude and longitude coordinates
-midLat  = (max(lat)+min(lat))/2 ;
+midLat  = (max(lat1)+min(lat1))/2 ;
 [latAct, lonAct ]   = reorientXY2LatLon(logsout.getElement('xact').Values.Data,...
     logsout.getElement('yact').Values.Data,transMatrix,lat1(1),lon1(1),midLat);
 clear midLat
