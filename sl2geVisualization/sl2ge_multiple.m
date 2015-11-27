@@ -59,8 +59,8 @@ handles.ie2 = actxcontrol('Shell.Explorer.2',[0   0   560  400]);
 
 projectRoot = evalin('base','pwd');
 
-eval(sprintf('Navigate(handles.ie1,''file:%s'');',[projectRoot,'\sl2geVisualization\webServices\sl2ge_autruism_v1.html']))
-eval(sprintf('Navigate(handles.ie2,''file:%s'');',[projectRoot,'\sl2geVisualization\webServices\sl2ge_autruism_v2.html']))
+eval(sprintf('Navigate(handles.ie1,''file:%s'');',fullfile(projectRoot,'sl2geVisualization','webServices','sl2ge_autruism_v1.html')))
+eval(sprintf('Navigate(handles.ie2,''file:%s'');',fullfile(projectRoot,'sl2geVisualization','webServices','sl2ge_autruism_v2.html')))
 
 % Get the Document
 handles.myDoc1 = handles.ie1.Document;
