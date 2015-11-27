@@ -7,7 +7,7 @@
 [~, deepestFolder] = fileparts(pwd);
 
 if exist('projectRoot','var')
-    cd([projectRoot,'\Route'])
+    cd( fullfile(projectRoot,'Route') )
 elseif and(exist('Route','dir'),not(strcmp(deepestFolder,'Route')))
     % Route directory exists and we're not in it
     cd Route
