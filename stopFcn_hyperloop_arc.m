@@ -21,7 +21,7 @@ else
     defaultFilename = strcat('Results_Sim_',datestr(now,'yyyy-mm-dd_HH-MM'));
 end
 if exist('projectRoot','var')
-    defaultFilename = strcat(projectRoot,'\SimResults\',defaultFilename);
+    defaultFilename = fullfile(projectRoot,'SimResults',defaultFilename);
 end
 [resultsFilename,resultsPathname] = uiputfile('*.mat','Save the route data',defaultFilename);
 resultsFilename = strcat(resultsPathname,resultsFilename);
