@@ -18,4 +18,4 @@ Additional toolboxes for enhanced functionality:
 - SimMechanics
 - Simulink 3D Animation
 
-[![View Enigma on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/51009-enigma)
+[![View mabrauer/hyperloop_sl on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/47488-mabrauer-hyperloop_sl)
