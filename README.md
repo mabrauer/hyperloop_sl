@@ -17,3 +17,5 @@ Additional toolboxes for enhanced functionality:
 - SimScape
 - SimMechanics
 - Simulink 3D Animation
+
+[![View Enigma on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/51009-enigma)
